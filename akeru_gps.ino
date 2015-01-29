@@ -58,7 +58,7 @@ void setup()
   
   // watchdog, to wake up
   //WDTO_1S : wdt lib constants, (int) 6. Binary : (0110)
-  WTD(WDTO_1S);
+  setupWatchdogForSleep(WDTO_1S);
   
   // connect at 115200 so we can read the GPS fast enough and echo without dropping chars
   // also spit it out
