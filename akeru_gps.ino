@@ -57,7 +57,8 @@ void setup()
   disableReset();
   
   // watchdog, to wake up
-  setupWatchdogForSleep(WDTO_1S);
+  //WDTO_1S : wdt lib constants, (int) 6. Binary : (0110)
+  WTD(WDTO_1S);
   
   // connect at 115200 so we can read the GPS fast enough and echo without dropping chars
   // also spit it out
@@ -334,22 +335,26 @@ void setupWatchdogForSleep(uint8_t durationBits) {
   uint8_t WDTCSR_BIT_3 = (durationBits >> 3) & 1; // WDP3 is bit 5 in WDTCSR so we handle it separately
   uint8_t WDTCSR_BITS_210 = durationBits & 7;
 
+  // disable all interrupts
   cli();
+  
   /*
-  WDTCSR configuration:
-  WDIE = 1: Interrupt Enable WDE = 1 :Reset Enable
+  * WDTCSR configuration:
+  * WDIE = 1: Interrupt Enable
+  * WDE = 1 :Reset Enable
+  * WDP0 - WDP3 : timeout value (bin)
   */
-
-  // Enter Watchdog Configuration mode: WDTCSR |= (1<<WDCE) | (1<<WDE);
+  // Enter Watchdog Configuration mode
+  //WDCE - This is a safety to enable a configuration mode that will last 4 clock cycles. 
   WDTCSR |= (1 << WDCE) | (1 << WDE);
 
-  // Set Watchdog settings:
+  // Set Watchdog settings
   WDTCSR = (1 << WDIE) | (0 << WDE) | (WDTCSR_BIT_3 << WDP3) | WDTCSR_BITS_210;
 
   sei();
 }
 
 ISR(WDT_vect) {
-    // nothing to do in the interrupt
-    // but declaration required
+    //interrupt fct called upon watchdog timeout
+    // nothing to do but declaration required
 }
